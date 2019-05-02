@@ -17,7 +17,7 @@ namespace bullpgia {
 		const uint TECHNICAL_VICTORY_TO_CHOOSER = maxTurns+1;
 
 		string choice = chooser.choose(length);
-		std::cout << "I choose: " << choice << std::endl;
+		//std::cout << "I choose: " << choice << std::endl;
 		if (choice.length()!=length)       // Illegal choice
 			return TECHNICAL_VICTORY_TO_GUESSER;
 		guesser.startNewGame(length);  // tell the guesser that a new game starts now
