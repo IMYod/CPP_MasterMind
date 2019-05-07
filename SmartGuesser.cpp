@@ -16,7 +16,7 @@ string SmartGuesser::guess() {
 	if (myset.size()<=2){
 		guess = guessPossible();
 	}
-	else if (counter = 0){ //first guess
+	else if (counter == 0){ //first guess
 		guess = "";
 		if (left) {
 			for (int i=0; i<length/2; i++)
@@ -76,7 +76,7 @@ void SmartGuesser::learn(answer response) {
 
 			myset.clear();
 			for (int i=0; i<pow(10.0,length/2); ++i){
-				string posChoice = numToGuess(i,theLength/2) + dontCare;
+				string posChoice = numToGuess(i,length/2) + dontCare;
 				if (response.bull + length/2 == bullpgia::calculateBullAndPgia(posChoice, lastGuess).bull)
 					newSet.insert(posChoice);
 			}
@@ -101,8 +101,8 @@ void SmartGuesser::learn(answer response) {
 
 	else { //not left
 		if (counter == 1){ //first insertion
-			for (int i=0; i<pow(10.0,theLength); ++i){
-				string posChoice = numToGuess(i,theLength);
+			for (int i=0; i<pow(10.0,length); ++i){
+				string posChoice = numToGuess(i,length);
 				if (response.bull + length/2 == bullpgia::calculateBullAndPgia(posChoice, lastGuess).bull)
 					newSet.insert(posChoice);
 			}
