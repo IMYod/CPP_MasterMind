@@ -16,7 +16,7 @@ string SmartGuesser::guess() {
 	if (myset.size()<=2){
 		guess = guessPossible();
 	}
-	else if (lastGuess == "-1"){ //first guess
+	else if (counter = 0){ //first guess
 		guess = "";
 		if (left) {
 			for (int i=0; i<length/2; i++)
@@ -47,29 +47,15 @@ string SmartGuesser::guess() {
 	this->lastGuess = guess;
 
 	//std::cout << "size of set is: " << myset.size() << "\tguess: " << guess << std::endl;
-
+	counter++;
 	return guess;
 }
 
 void SmartGuesser::startNewGame(uint theLength) {
+	counter = 0;
 	length = theLength;
-	if (length <=6){
-		//insert all possible numbers to myset
-		for (int i=0; i<pow(10.0,theLength); ++i){
-			this->myset.insert(numToGuess(i,theLength));
-		}
-	}
-
-	else { //create all strings like "01234:::::"
-		string dontCare = "";
-		for (int i=0; i<length - length/2; ++i)
-			dontCare = dontCare + ":";	
-
-		myset.clear();
-		for (int i=0; i<pow(10.0,length/2); ++i)
-			this->myset.insert(numToGuess(i,theLength/2) + dontCare);
+	if (length >6)
 		left = true;
-	}
 	lastGuess="-1";
 }
 
@@ -78,26 +64,50 @@ void SmartGuesser::learn(answer response) {
 	//if number in myset is match to the response -> insert it to the new set
 
 	if (left) {
-		if (response.bull == length/2){
+		if (response.bull == length/2){ //true for the left guess
 			createRight(lastGuess.substr(0,length/2));
 			return;
 		}
+		
+		if (counter == 1){ //first insertion
+			string dontCare = "";
+			for (int i=0; i<length - length/2; ++i)
+				dontCare = dontCare + ":";	
 
-		myset.erase(lastGuess);
-		for ( auto it = myset.begin(); it != myset.end(); ++it ){
-			if (response.bull + length/2 == bullpgia::calculateBullAndPgia(*it, lastGuess).bull)
-				newSet.insert(*it);
+			myset.clear();
+			for (int i=0; i<pow(10.0,length/2); ++i){
+				string posChoice = numToGuess(i,theLength/2) + dontCare;
+				if (response.bull + length/2 == bullpgia::calculateBullAndPgia(posChoice, lastGuess).bull)
+					newSet.insert(posChoice);
+			}
 		}
+		
+		else {
 
-		myset=newSet;
-		newSet.clear();
+			myset.erase(lastGuess);
+			for ( auto it = myset.begin(); it != myset.end(); ++it ){
+				if (response.bull + length/2 == bullpgia::calculateBullAndPgia(*it, lastGuess).bull)
+					newSet.insert(*it);
+			}
 
-		if (newSet.size()==1){
-			createRight((*newSet.begin()).substr(0,length/2));
+			myset=newSet;
+			newSet.clear();
+
+			if (newSet.size()==1){
+				createRight((*newSet.begin()).substr(0,length/2));
+			}
 		}
 	}
 
-	else {
+	else { //not left
+		if (counter == 1){ //first insertion
+			for (int i=0; i<pow(10.0,theLength); ++i){
+				string posChoice = numToGuess(i,theLength);
+				if (response.bull + length/2 == bullpgia::calculateBullAndPgia(posChoice, lastGuess).bull)
+					newSet.insert(posChoice);
+			}
+		}
+		
 		myset.erase(lastGuess);
 		for ( auto it = myset.begin(); it != myset.end(); ++it ){
 			if (response==bullpgia::calculateBullAndPgia(*it, lastGuess)){
